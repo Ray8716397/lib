@@ -30,6 +30,8 @@ def require_oauth(required_scope):
                         raise HTTPError(401, "Not authenticated")
                     else:
                         return await method(self, *args, **kwargs)
+                except jwt.ExpiredSignatureError:
+                    raise HTTPError(401, "Token expired")
                 except Exception:
                     raise HTTPError(401, "Could not validate credentials")
 
