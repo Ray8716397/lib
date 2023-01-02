@@ -38,3 +38,23 @@ class ProcessPool(multiprocessing.pool.Pool):
     def __init__(self, *args, **kwargs):
         kwargs['context'] = NoDaemonContext()
         super(ProcessPool, self).__init__(*args, **kwargs)
+
+
+# multi procs example
+proc_bar = tqdm(total=txt_sum)
+with multiprocessing.Pool(processes=multiprocessing.cpu_count()//2) as proc_pool:
+    for root, dirs, files in os.walk(INPUT_DIR):
+        for f in files:
+            if '.txt' in f:
+                tsv_path = os.path.join(root, f)
+                proc_results.append(proc_pool.apply_async(tsv_proc, (tsv_path, tsv_path.replace(INPUT_DIR, OUTPUT_DIR)), callback=lambda _: proc_bar.update()))
+    else:
+        # wait until all thread is finished
+        proc_pool.close()
+        proc_pool.join()
+
+# merge all result
+sums = 0
+for res in proc_results:
+    c = res.get()
+    sums += c
