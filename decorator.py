@@ -24,10 +24,11 @@ def how_much_time(method):
 
 
 @how_much_time
-def test():
+def test(k):
     time.sleep(1)
-    a = 1 + 1
+    k = k + 1
+    return k
 
 
 if __name__ == '__main__':
-    test()
+    test(22)
